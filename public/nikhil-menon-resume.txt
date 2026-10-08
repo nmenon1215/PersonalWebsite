@@ -1,0 +1,25 @@
+Nikhil Menon
+
+Bachelor of Science in Computer Science and Mathematics
+Northeastern University, Khoury College of Computer Science
+September 2022 - May 2026
+
+Education
+- Dean's List
+- Athlete of the Season
+- Distance Track/Cross Country Captain
+- GPA: 3.7/4.0
+
+Experience
+- Software Engineer Co-op, Proof Remote (July 2025 - December 2025)
+- Software Engineer, Ambient Security (July 2024 - December 2024)
+- Software Engineer Intern, Oddr (May 2023 - August 2023)
+- Algorithms and OOD Tutor, Northeastern University (January 2024 - Present)
+
+Projects
+- GameNite Tavern
+- Generative AI for Climbing Routes
+- Reversi
+
+Interests
+- Teaching, running, climbing, snowboarding, piano, guitar, mind puzzles, chess, sudoku
