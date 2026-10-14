@@ -1,0 +1,38 @@
+/* Palette labels:
+   Main page background: Dark charcoal
+   Hero background: Charcoal-to-graphite gradient
+   Main text and headings: Warm ivory
+   Secondary text: Muted warm gray
+   Project cards: Graphite
+   Alternate sections: Deep charcoal
+   Primary buttons: Deep green
+   Button hover / highlights: Orange
+   Small decorative details: Red
+   Borders and dividers: Warm gray
+*/
+
+:root {
+  --color-page-bg: #151618;
+  --color-hero-start: #1b1c1f;
+  --color-hero-end: #121315;
+  --color-text: #f2ede5;
+  --color-text-muted: #bdb8b0;
+  --color-card: #242529;
+  --color-section-alt: #1d1f22;
+  --color-primary: #4d8b5c;
+  --color-primary-hover: #fd7b17;
+  --color-accent: #ef2533;
+  --color-border: #e5e2da;
+
+  --bg: var(--color-page-bg);
+  --bg-soft: rgba(23, 24, 27, 0.82);
+  --surface: rgba(36, 37, 41, 0.94);
+  --surface-strong: rgba(28, 29, 33, 0.98);
+  --text: var(--color-text);
+  --muted: var(--color-text-muted);
+  --line: rgba(229, 226, 218, 0.16);
+  --accent: var(--color-primary);
+  --accent-2: var(--color-primary-hover);
+  --accent-3: var(--color-accent);
+  --shadow: 0 22px 60px rgba(0, 0, 0, 0.38);
+}
