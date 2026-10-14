@@ -1,11 +1,23 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Link, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import githubIcon from '../Icons/Github_icon.svg';
 import linkedInIcon from '../Icons/LinkedIn_icon.svg';
 import personalLogo from '../Icons/Menon_Nikhil_icon.svg';
+import profilePhoto from '../Icons/Professional_Profile_Picture.jpg';
 import stravaIcon from '../Icons/Strava_icon.svg';
 import { Icon } from './components/Icon';
-import { featuredProjects, profile, socials, type Project } from './data/siteContent';
+import {
+  certifications,
+  featuredProjects,
+  profile,
+  quotePool,
+  socials,
+  toolGroups,
+  workExperience,
+  type Project
+} from './data/siteContent';
+
+const contactEmail = 'menon.nik@northeastern.edu';
 
 type AuthUser = {
   username: string;
@@ -118,6 +130,16 @@ function useAuth() {
 
 export default function App() {
   const auth = useAuth();
+  const location = useLocation();
+
+  useEffect(() => {
+    const shouldLockScroll = location.pathname === '/';
+    document.body.style.overflow = shouldLockScroll ? 'hidden' : '';
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [location.pathname]);
 
   if (auth.loading) {
     return <LoadingScreen />;
@@ -207,97 +229,217 @@ function LandingPage() {
 
 function PortfolioPage() {
   const [selectedProject, setSelectedProject] = useState<Project>(featuredProjects[0]);
+  const [quoteIndex, setQuoteIndex] = useState(0);
   const iconMap = {
     github: githubIcon,
     linkedin: linkedInIcon,
     strava: stravaIcon
   } as const;
 
+  const handleEmailClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    window.location.href = `mailto:${contactEmail}`;
+  };
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setQuoteIndex((current) => (current + 1) % quotePool.length);
+    }, 30000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
   return (
     <section className="page page-portfolio">
-      <header className="portfolio-topbar" aria-label="Portfolio header">
-        <div className="portfolio-brand" aria-label="Nikhil Menon logo">
-          <img src={personalLogo} alt={`${profile.name} logo`} className="portfolio-brand-logo" />
-        </div>
+      <div className="portfolio-layout">
+        <aside className="portfolio-sidebar" aria-label="Profile panel">
+          <div className="portfolio-profile-bubble">
+            <img src={profilePhoto} alt={profile.name} className="portfolio-avatar" />
 
-        <nav className="portfolio-social-row" aria-label="Social links">
-          {socials.map((social) => (
-            <a
-              key={social.label}
-              href={social.href}
-              className="portfolio-social-link"
-              target="_blank"
-              rel="noreferrer"
-              aria-label={social.label}
-            >
-              {social.icon === 'email' ? (
-                <Icon name="email" className="social-icon" />
-              ) : (
-                <img src={iconMap[social.icon]} alt="" className="social-image" />
-              )}
-            </a>
-          ))}
-        </nav>
-      </header>
+            <div className="portfolio-logo-badge" aria-label="Brand logo">
+              <img src={personalLogo} alt={`${profile.name} logo`} className="portfolio-brand-logo" />
+            </div>
 
-      <div className="section-heading">
-        <span className="eyebrow">Portfolio</span>
-        <h1>Selected work, tuned for depth.</h1>
-        <p>
-          Tap a project to open a blurb, context, and a direct link. The goal here is a concise showcase that can grow into
-          full case studies later.
-        </p>
-      </div>
+            <p className="profile-summary">{profile.summary}</p>
 
-      <div className="portfolio-grid">
-        <div className="project-list">
-          {featuredProjects.map((project) => {
-            const isActive = project.title === selectedProject.title;
+            <div className="portfolio-quote" aria-live="polite">
+              <span className="eyebrow">Quotes</span>
+              <p>“{quotePool[quoteIndex]}”</p>
+            </div>
 
-            return (
-              <button
-                key={project.title}
-                className={`project-card ${isActive ? 'is-active' : ''}`}
-                onClick={() => setSelectedProject(project)}
-                type="button"
-              >
-                <div className="project-card-top">
-                  <span className="project-season">{project.season}</span>
-                  <Icon name="spark" className="card-icon" />
-                </div>
-                <h2>{project.title}</h2>
-                <p>{project.shortDescription}</p>
-                <div className="tag-row">
-                  {project.tags.map((tag) => (
+            <nav className="portfolio-social-row" aria-label="Social links">
+              {socials.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.icon === 'email' ? `mailto:${contactEmail}` : social.href}
+                  className="portfolio-social-link"
+                  target={social.icon === 'email' ? undefined : '_blank'}
+                  rel={social.icon === 'email' ? undefined : 'noreferrer'}
+                  onClick={social.icon === 'email' ? handleEmailClick : undefined}
+                  aria-label={social.label}
+                >
+                  {social.icon === 'email' ? (
+                    <Icon name="email" className="social-icon" />
+                  ) : (
+                    <img src={iconMap[social.icon]} alt="" className="social-image" />
+                  )}
+                </a>
+              ))}
+            </nav>
+          </div>
+        </aside>
+
+        <div className="portfolio-main">
+          <div className="section-heading">
+            <span className="eyebrow">Portfolio</span>
+          </div>
+
+          <section className="portfolio-section">
+            <div className="section-header">
+              <h2>Projects</h2>
+            </div>
+
+            <div className="portfolio-grid">
+              <div className="project-list">
+                {featuredProjects.map((project) => {
+                  const isActive = project.title === selectedProject.title;
+
+                  return (
+                    <button
+                      key={project.title}
+                      className={`project-card ${isActive ? 'is-active' : ''}`}
+                      onClick={() => setSelectedProject(project)}
+                      type="button"
+                    >
+                      <div className="project-card-top">
+                        <span className="project-season">{project.season}</span>
+                        <Icon name="spark" className="card-icon" />
+                      </div>
+                      <h3>{project.title}</h3>
+                      <p>{project.shortDescription}</p>
+                      <div className="tag-row">
+                        {project.tags.map((tag) => (
+                          <span key={tag} className="tag">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <article className="project-detail">
+                <span className="eyebrow">Project details</span>
+                <h3>{selectedProject.title}</h3>
+                <p className="detail-lead">{selectedProject.details}</p>
+                <p className="detail-impact">{selectedProject.impact}</p>
+
+                <div className="tag-row tag-row-wide">
+                  {selectedProject.tags.map((tag) => (
                     <span key={tag} className="tag">
                       {tag}
                     </span>
                   ))}
                 </div>
-              </button>
-            );
-          })}
+
+                <a className="button button-primary button-inline" href={selectedProject.linkHref} target="_blank" rel="noreferrer">
+                  {selectedProject.linkLabel}
+                  <Icon name="arrow" className="button-icon" />
+                </a>
+              </article>
+            </div>
+          </section>
+
+          <section className="portfolio-section">
+            <div className="section-header">
+              <h2>Experience</h2>
+            </div>
+
+            <div className="experience-list">
+              {workExperience.map((role) => (
+                <article key={role.title} className="experience-item">
+                  <div className="experience-meta">
+                    <span>{role.period}</span>
+                    <span>{role.company}</span>
+                  </div>
+                  <div className="experience-body">
+                    <h3>{role.title}</h3>
+                    <p>{role.summary}</p>
+                    <ul>
+                      {role.highlights.map((highlight) => (
+                        <li key={highlight}>{highlight}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="portfolio-section">
+            <div className="section-header">
+              <h2>Skills</h2>
+            </div>
+
+            <div className="tool-grid">
+              {toolGroups.map((group) => (
+                <div key={group.category} className="tool-group">
+                  <h3>{group.category}</h3>
+                  <div className="tool-row">
+                    {group.tools.map((tool) => (
+                      <span key={tool} className="tool-tag">
+                        {tool}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="portfolio-section">
+            <div className="section-header">
+              <h2>Certifications</h2>
+            </div>
+
+            <div className="certification-list">
+              {certifications.map((cert) => (
+                <article key={cert.title} className="certification-item">
+                  <div className="certification-meta">
+                    <span>{cert.year}</span>
+                    <span>{cert.issuer}</span>
+                  </div>
+                  <div className="certification-body">
+                    <h3>{cert.title}</h3>
+                    <p>{cert.details}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="portfolio-section">
+            <div className="section-header">
+              <h2>Contact</h2>
+            </div>
+
+            <div className="contact-card">
+              <p>
+                I’m open to product, software, and sports-tech opportunities where curiosity, systems thinking, and execution
+                matter.
+              </p>
+              <div className="contact-actions">
+                <a className="button button-primary" href={`mailto:${contactEmail}`} onClick={handleEmailClick}>
+                  Email me
+                </a>
+                <a className="button button-secondary" href={profile.resumeHref} target="_blank" rel="noreferrer">
+                  Resume
+                </a>
+              </div>
+            </div>
+          </section>
         </div>
-
-        <article className="project-detail">
-          <span className="eyebrow">Project detail</span>
-          <h2>{selectedProject.title}</h2>
-          <p className="detail-lead">{selectedProject.details}</p>
-          <p className="detail-impact">{selectedProject.impact}</p>
-
-          <div className="tag-row tag-row-wide">
-            {selectedProject.tags.map((tag) => (
-              <span key={tag} className="tag tag-accent">
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          <a className="button button-primary button-inline" href={selectedProject.linkHref} target="_blank" rel="noreferrer">
-            {selectedProject.linkLabel}
-            <Icon name="arrow" className="button-icon" />
-          </a>
-        </article>
       </div>
     </section>
   );
